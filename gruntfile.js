@@ -32,7 +32,7 @@ module.exports = function(grunt){
             scripts:{
                 expand: true,
                 src: ['dist/public/js/**/*.js']
-            }
+            },
         }
     });
 
