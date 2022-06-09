@@ -12,13 +12,13 @@ module.exports = function() {
 
     //Porta da aplicação	
     //app.set('port', 3000);
-    app.set('port', process.env.PORT || 5000);
+    app.set('port', process.env.PORT || 3000);
 
     //Ativação dos middlewares de cookie, sessão e inicialização do passport
     app.use(cookieParser());
     app.use(session(
         {
-            secret: 'homem avestruz',
+            secret: 'campus pirituba',
             resave: true,
             saveUninitialized: true
         }
