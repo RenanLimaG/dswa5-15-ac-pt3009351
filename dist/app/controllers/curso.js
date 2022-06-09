@@ -1,8 +1,7 @@
 module.exports = function(app) {
+    var sanitize = require('mongo-sanitize');
     var Curso = app.models.curso;
     var controller = {};
-    var sanitize = require('mongo-sanitize');
-
     controller.listaCursos = function(req, res) {
         Curso.find().exec().then(
             function(cursos) {
@@ -15,40 +14,34 @@ module.exports = function(app) {
     };
 
     controller.obtemCurso = function(req, res) {
-        var _id = req.params.id;
+        var _id = sanitize(req.params.id);
         Curso.findById(_id).exec().then(
-            function(curso) {
-                if (!curso) throw new Error("Curso não encontrado");
-                res.json(curso)
-            },
+          function(curso) {
+            if (!curso) throw new Error("Curso não encontrado");
+            res.json(curso)
+          },
             function(erro) {
                 console.log(erro);
                 res.status(404).json(erro)
-            });
+            }
+        );
     };
 
     controller.removeCurso = function(req, res) {
         var _id = sanitize(req.params.id);
-        Curso.remove({"_id" : _id}).exec().then(
-            function() {
-                res.end();
-            },
-            function(erro) {
-                return console.error(erro);
-            });
+        Curso.deleteOne({ "_id": _id }).exec().then(
+        function() {
+            res.end();
+        },
+        function(erro) {
+            return console.error(erro);
+        });
     };
-
+    
     controller.salvaCurso = function(req, res) {
         var _id = req.body._id;
-
-        var dados = {
-            "curso" : req.body.nome,
-            "coordenador" : req.body.email,
-            "emergencia" : req.body.emergencia || null
-            };
-
         if (_id) {
-            Curso.findByIdAndUpdate(_id, dados).exec().then(
+            Curso.findByIdAndUpdate(_id, req.body).exec().then(
                 function(curso) {
                     res.json(curso);
                 },
@@ -57,7 +50,7 @@ module.exports = function(app) {
                     res.status(500).json(erro);
                 });
         } else {
-            Curso.create(dados).then(
+            Curso.create(req.body).then(
                 function(curso) {
                     res.status(201).json(curso);
                 },
@@ -67,6 +60,6 @@ module.exports = function(app) {
                 });
         }
     };
-
+    
     return controller;
 };

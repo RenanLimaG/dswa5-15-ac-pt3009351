@@ -15,16 +15,16 @@ angular.module('ifsp').controller('CursoController',
             );
 
         } else { $scope.curso = new Curso(); }
-
-        $scope.salva = function() {
-            $scope.curso.$save()
-                .then(function() {
-                    $scope.mensagem = { texto: 'Salvo com sucesso' };
-                    // Limpar o formulário
-                    $scope.curso = new Curso();
-                })
-                .catch(function(erro) {
-                    $scope.mensagem = { texto: 'Não foi possível salvar' };
-                });
-        };
+        
+                $scope.salva = function() {
+                    $scope.curso.$save()
+                        .then(function() {
+                            $scope.mensagem = { texto: 'Salvo com sucesso' };
+                            // Limpar o formulário
+                            $scope.curso = new Curso();
+                        })
+                        .catch(function(erro) {
+                            $scope.mensagem = { texto: 'Não foi possível salvar' };
+                        });
+                };
     }]);

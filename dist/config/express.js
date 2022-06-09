@@ -1,11 +1,10 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var load = require('express-load');
-var helmet = require('helmet');
-
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var passport = require('passport');
+var helmet = require('helmet');
 
 module.exports = function() {
     //Instância do Express
@@ -13,7 +12,28 @@ module.exports = function() {
 
     //Porta da aplicação	
     //app.set('port', 3000);
-    app.set('port', process.env.PORT || 3000);
+    app.set('port', process.env.PORT || 5000);
+
+    //Ativação dos middlewares de cookie, sessão e inicialização do passport
+    app.use(cookieParser());
+    app.use(session(
+        {
+            secret: 'homem avestruz',
+            resave: true,
+            saveUninitialized: true
+        }
+    ));
+    app.use(passport.initialize());
+    app.use(passport.session());
+    
+    //Ativa o Helmet, um middleware do Express
+    app.use(helmet());
+    app.disable('x-powered-by');
+    app.use(helmet.hidePoweredBy({ setTo: 'PHP 5.5.14' }));
+    app.use(helmet.xframe());
+    app.use(helmet.xssFilter());
+    app.use(helmet.nosniff());
+    app.disable('x-powered-by');
 
     //Middleware
     app.use(express.static('./public'));
@@ -25,32 +45,18 @@ module.exports = function() {
     app.set('view engine', 'ejs');
     app.set('views', './app/views');
 
-    app.use(cookieParser());
-    app.use(session({
-        secret: 'campus pirituba',
-        resave: true,
-        saveUninitialized: true
-    }));
-
-    app.use(passport.initialize());
-    app.use(passport.session());
-
-    app.use(helmet());
-    app.use(helmet.xframe());
-    app.use(helmet.xssFilter());
-    app.use(helmet.nosniff());
-    app.disable('x-powered-by');
     
     //Carregar pastas
-    load('models', { cwd: 'app' })
+    load('models', {cwd: 'app'})
         .then('controllers')
         .then('routes/auth.js')
         .then('routes')
         .into(app);
-
+    
+    //Caso nenhuma rota atenda
     app.get('*', function(req, res) {
-         res.status(404).render('404');
-        });
+        res.status(404).render('404');
+    });
 
     return app;
 };

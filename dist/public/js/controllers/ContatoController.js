@@ -24,4 +24,6 @@ angular.module('ifsp').controller('ContatoController',
                     $scope.mensagem = { texto: 'Não foi possível salvar' };
                 });
         };
+
+
     }]);
